@@ -1,6 +1,6 @@
 const express = require("express");
 const PlateRegion = require("../models/PlateRegion");
-const PlateCode = require("../models/PlateCode");
+const PlateCode = require("../models/plateCode");
 
 const router = express.Router();
 
