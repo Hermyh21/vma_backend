@@ -38,10 +38,7 @@ const visitorSchema = new mongoose.Schema(
       type: [String],
       required: false,
     },
-    selectedHostName: {
-      type: String,
-      required: true,
-    },
+    
     possessions: [possesionSchema],
     approved: {
       type: Boolean,

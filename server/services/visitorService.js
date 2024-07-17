@@ -20,7 +20,7 @@ const fetchVisitorLogs = async (date) => {
 // Fetch approved visitors from the database
 const fetchApprovedVisitors = async (approved) => {
   try {
-    const visitors = await Visitor.find({ approved: approved });
+    const visitors = await Visitor.find({ approved: true });
     return visitors;
   } catch (error) {
     console.error("Error fetching approved visitors: ", error);
@@ -39,6 +39,20 @@ const pollVisitorLogs = (io, interval = 10000) => {
     }
   }, interval);
 };
+//Delete visitor by id
+const deleteVisitorById = async (visitorId) => {
+  try {
+    const visitor = await Visitor.findByIdAndDelete(visitorId);
+
+    if (!visitor) {
+      throw new Error('Visitor not found');
+    }
+
+    return visitor;
+  } catch (error) {
+    throw new Error('Failed to delete visitor');
+  }
+}
 const getVisitorById = async (visitorId) => {
   try {
     // Fetch visitor by ID from the database
@@ -55,4 +69,4 @@ const getVisitorById = async (visitorId) => {
     throw error;
   }
 };
-module.exports = { fetchVisitorLogs, pollVisitorLogs, getVisitorById, fetchApprovedVisitors };
+module.exports = { fetchVisitorLogs, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };

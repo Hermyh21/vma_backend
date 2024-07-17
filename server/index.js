@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const authRouter = require("./Routes/auth");
+const userRouter = require('./Routes/userRoutes');
 const visitorRoutes = require("./Routes/visitor");
 const analyticsRoutes = require("./Routes/analytics");
 const plateRouter = require("./Routes/plate");
@@ -9,6 +10,7 @@ const cors = require("cors");
 const http = require("http");
 const socketIO = require("socket.io");
 const { pollVisitorLogs } = require("./services/visitorService");
+const possessionsRoutes = require('./Routes/possessions');
 
 require("dotenv").config();
 
@@ -54,8 +56,9 @@ app.post("/", (req, res) => {
 app.use("/api", visitorRoutes);
 app.use(authRouter);
 app.use(analyticsRoutes);
-app.use("/api", plateRouter); // Check the routes
-
+app.use("/api", plateRouter); 
+app.use(userRouter);
+app.use('/api/possessions', possessionsRoutes);
 // Real-time updates with Socket.io
 io.on("connection", (socket) => {
   console.log("A client connected");

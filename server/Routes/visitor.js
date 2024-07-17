@@ -3,7 +3,7 @@ const router = express.Router();
 const Visitor = require("../Models/visitor");
 const { fetchVisitorLogs } = require("../services/visitorService");
 const { fetchApprovedVisitors } = require("../services/visitorService");
-const { getVisitorById } = require("../services/visitorService");
+const { deleteVisitorById, getVisitorById } = require("../services/visitorService");
 // Add a visitor
 router.post("/visitors", async (req, res) => {
   let data = req.body;
@@ -95,7 +95,7 @@ router.patch("/visitors/:id", async (req, res) => {
     "numberOfVisitors",
     "bringCar",
     "selectedPlateNumbers",
-    "selectedHostName",
+    
     "possessionCheckedState",
     "possessionQuantities",
     "approved",
@@ -129,15 +129,12 @@ router.patch("/visitors/:id", async (req, res) => {
 // Delete a visitor
 router.delete("/visitors/:id", async (req, res) => {
   try {
-    const visitor = await Visitor.findByIdAndDelete(req.params.id);
-
-    if (!visitor) {
-      return res.status(404).send({ message: "Visitor not found" });
-    }
+    const visitorId = req.params.id;
+    const visitor = await deleteVisitorById(visitorId);
 
     res.status(200).send(visitor);
   } catch (error) {
-    res.status(500).send({ error: "Failed to delete visitor" });
+    res.status(500).send({ error: error.message });
   }
 });
 
@@ -172,12 +169,10 @@ router.put("/approve/:id", async (req, res) => {
       id,
       { approved: true, declined: false, declineReason: '' },
       { new: true, runValidators: true }
-    );
-    
+    );    
     if (!visitor) {
       return res.status(404).send({ message: "Visitor not found" });
     }
-
     res.status(200).send(visitor);
   } catch (error) {
     res.status(500).send({ error: "Failed to approve visitor", message: error.message });
