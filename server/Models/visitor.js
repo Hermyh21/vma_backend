@@ -52,6 +52,14 @@ const visitorSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    isInside: {
+      type: Boolean,
+      default: false,
+    },
+    hasLeft: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     timestamps: true,

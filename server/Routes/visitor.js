@@ -23,7 +23,7 @@ router.post("/visitors", async (req, res) => {
 // Get all visitors
 router.get("/getVisitors", async (req, res) => {
   const { date } = req.query;
-  console.log("visitors add request recieved: ", req.query);
+  
   const visitor = await fetchVisitorLogs(date);
   console.log("fetched visitor recieved: ", visitor);
   if (visitor) {
@@ -195,6 +195,32 @@ router.get('/getapprovedVisitors', async (req, res) => {
   } catch (error) {
     console.error("Error fetching approved visitors: ", error);
     res.status(500).send(error);
+  }
+});
+// Endpoint to mark a visitor as inside
+router.put('/visitor/:id/enter', async (req, res) => {
+  try {
+    const visitor = await Visitor.findById(req.params.id);
+    if (!visitor) return res.status(404).send('Visitor not found');
+
+    visitor.isInside = true;
+    await visitor.save();
+    res.status(200).json(visitor);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+// Endpoint to mark a visitor as left
+router.put('/visitor/:id/leave', async (req, res) => {
+  try {
+    const visitor = await Visitor.findById(req.params.id);
+    if (!visitor) return res.status(404).send('Visitor not found');
+
+    visitor.hasLeft = true;
+    await visitor.save();
+    res.status(200).json(visitor);
+  } catch (err) {
+    res.status(500).send('Server error');
   }
 });
 module.exports = router;
