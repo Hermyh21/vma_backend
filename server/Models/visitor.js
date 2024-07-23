@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const possesionSchema = new Schema({
   item: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  
 });
 
 const visitorSchema = new mongoose.Schema(
@@ -50,7 +50,7 @@ const visitorSchema = new mongoose.Schema(
     },
     declineReason: {
       type: String,
-      default: false,
+      default: '',
     },
   },
   {

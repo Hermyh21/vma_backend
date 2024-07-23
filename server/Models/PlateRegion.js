@@ -1,15 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const PlateRegionSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    code: { type: String, required: true },
-  },
-  {
-    timestamps: true,
-  }
-);
+const regionSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+});
 
-const PlateRegion = mongoose.model("PlateRegion", PlateRegionSchema);
+const PlateRegion = mongoose.model('PlateRegion', regionSchema);
 
 module.exports = PlateRegion;
