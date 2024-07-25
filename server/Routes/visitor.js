@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
-const { fetchVisitorLogs } = require("../services/visitorService");
-const { fetchApprovedVisitors, declineVisitor, approveVisitor} = require("../services/visitorService");
-const { deleteVisitorById} = require("../services/visitorService");
+const { fetchVisitorLogs, fetchApprovedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests} = require("../services/visitorService");
+
 // Add a visitor
 router.post("/visitors", async (req, res) => {
   let data = req.body;
@@ -33,6 +32,17 @@ router.get("/getVisitors", async (req, res) => {
   }
 });
 
+// Fetch new requests
+router.get("/newRequests", async (req, res) => {
+  const { date } = req.query;
+  
+  try {
+    const newRequests = await fetchNewRequests(date);
+    res.status(200).send(newRequests);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
 router.get("/getVisitor/:visitorId", async (req, res) => {
   console.log("visitors get request recieved: ", req.query);
   try {
@@ -66,65 +76,6 @@ router.get("/visitors/:id", async (req, res) => {
     res.status(500).send(error);
   }
 });
-
-// Update a visitor
-// router.put("/updateVisitorStatus", async (req, res) => {
-//   const { id, approved, declined, declineReason } = req.body;
-//   try {
-//     const visitor = await Visitor.findById(id);
-//     if (!visitor) {
-//       return res.status(404).send({ message: "Visitor not found" });
-//     }
-//     visitor.approved = approved;
-//     visitor.declined = declined;
-//     visitor.declineReason = declineReason;
-//     await visitor.save();
-//     res.status(200).send(visitor);
-//   } catch (error) {
-//     res.status(500).send(error);
-//   }
-// });
-
-// router.patch("/visitors/:id", async (req, res) => {
-//   const updates = Object.keys(req.body);
-//   const allowedUpdates = [
-//     "name",
-//     "purpose",
-//     "startDate",
-//     "endDate",
-//     "numberOfVisitors",
-//     "bringCar",
-//     "selectedPlateNumbers",    
-//     "possessionCheckedState",    
-//     "approved",
-//     "declined",
-//     "declineReason",
-//   ];
-//   const isValidOperation = updates.every((update) =>
-//     allowedUpdates.includes(update)
-//   );
-
-//   if (!isValidOperation) {
-//     return res.status(400).send({ error: "Invalid updates!" });
-//   }
-
-//   try {
-//     const visitor = await Visitor.findByIdAndUpdate(req.params.id, req.body, {
-//       new: true,
-//       runValidators: true,
-//     });
-
-//     if (!visitor) {
-//       return res.status(404).send();
-//     }
-
-//     res.status(200).send(visitor);
-//   } catch (error) {
-//     res.status(400).send(error);
-//   }
-// });
-
-// Delete a visitor
 router.delete("/visitors/:visitorId", async (req, res) => {
   try {
     const visitorId = req.params.id;
@@ -170,17 +121,13 @@ router.put("/declineVisitor/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-// Define the route for fetching approved visitors
-router.get('/getapprovedVisitors', async (req, res) => {
-  const { approved } = req.query;
-  console.log("Approved visitors request received: ", req.query);
+// Fetch approved visitors
+router.get("/approvedVisitors", async (req, res) => {
   try {
-    const visitors = await fetchApprovedVisitors(approved === 'true');
-    console.log("Fetched approved visitors: ", visitors);
-    res.status(200).send(visitors);
+    const approvedVisitors = await fetchApprovedVisitors();
+    res.status(200).send(approvedVisitors);
   } catch (error) {
-    console.error("Error fetching approved visitors: ", error);
-    res.status(500).send(error);
+    res.status(500).send({ error: error.message });
   }
 });
 // Endpoint to mark a visitor as inside

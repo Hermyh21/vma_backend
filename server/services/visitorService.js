@@ -17,14 +17,31 @@ const fetchVisitorLogs = async (date) => {
     throw error;
   }
 };
-// Fetch approved visitors from the database
-const fetchApprovedVisitors = async (approved) => {
+const fetchNewRequests = async (date) => {
+  console.log("fetchNewRequests: ", date);
   try {
-    const visitors = await Visitor.find({ approved: true });
-    return visitors;
+    const newRequests = await Visitor.find({
+      startDate: { $lte: new Date(date) },
+      endDate: { $gte: new Date(date) },
+      approved: false,
+      declined: false
+    });
+
+    console.log("fetchedNewRequests: ", newRequests);
+    return newRequests;
   } catch (error) {
-    console.error("Error fetching approved visitors: ", error);
+    console.error("Error fetching new requests:", error);
     throw error;
+  }
+};
+
+// Function to fetch approved visitors
+const fetchApprovedVisitors = async () => {
+  try {
+    const approvedVisitors = await Visitor.find({ approved: true });
+    return approvedVisitors;
+  } catch (error) {
+    throw new Error('Failed to fetch approved visitors: ' + error.message);
   }
 };
 
@@ -108,4 +125,4 @@ const declineVisitor = async (visitorId, declineReason = '') => {
     throw new Error('Failed to decline visitor: ' + error.message);
   }
 };
-module.exports = { fetchVisitorLogs, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+module.exports = { fetchVisitorLogs, fetchNewRequests, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
