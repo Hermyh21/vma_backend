@@ -149,7 +149,7 @@ router.get("/logs", async (req, res) => {
 
 router.put("/approveVisitor/:id", async (req, res) => {
   const { id } = req.params;
-
+  console.log(id);
   try {
     const visitor = await approveVisitor(id);
     res.status(200).send(visitor);
