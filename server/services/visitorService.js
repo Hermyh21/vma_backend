@@ -69,4 +69,43 @@ const getVisitorById = async (visitorId) => {
     throw error;
   }
 };
-module.exports = { fetchVisitorLogs, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+// Approve visitor by ID
+const approveVisitor = async (visitorId) => {
+  try {
+    const visitor = await Visitor.findById(visitorId);
+
+    if (!visitor) {
+      throw new Error('Visitor not found');
+    }
+
+    visitor.approved = true;
+    visitor.declined = false;
+
+    await visitor.save();
+
+    return visitor;
+  } catch (error) {
+    throw new Error('Failed to approve visitor: ' + error.message);
+  }
+};
+// Decline visitor by ID
+const declineVisitor = async (visitorId, declineReason = '') => {
+  try {
+    const visitor = await Visitor.findById(visitorId);
+
+    if (!visitor) {
+      throw new Error('Visitor not found');
+    }
+
+    visitor.declined = true;
+    visitor.approved = false;
+    visitor.declineReason = declineReason;
+
+    await visitor.save();
+
+    return visitor;
+  } catch (error) {
+    throw new Error('Failed to decline visitor: ' + error.message);
+  }
+};
+module.exports = { fetchVisitorLogs, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };

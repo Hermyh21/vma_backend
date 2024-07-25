@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
 const { fetchVisitorLogs } = require("../services/visitorService");
-const { fetchApprovedVisitors } = require("../services/visitorService");
-const { deleteVisitorById, getVisitorById } = require("../services/visitorService");
+const { fetchApprovedVisitors, declineVisitor, approveVisitor} = require("../services/visitorService");
+const { deleteVisitorById} = require("../services/visitorService");
 // Add a visitor
 router.post("/visitors", async (req, res) => {
   let data = req.body;
@@ -147,41 +147,27 @@ router.get("/logs", async (req, res) => {
   }
 });
 
-// Route to approve a visitor
-router.put("/approve/:_id", async (req, res) => {
-  const { _id } = req.params;
+router.put("/approveVisitor/:id", async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const visitor = await Visitor.findByIdAndUpdate(
-      _id,
-      { approved: true, declined: false, declineReason: '' },
-      { new: true, runValidators: true }
-    );    
-    if (!visitor) {
-      return res.status(404).send({ message: "Visitor not found" });
-    }
+    const visitor = await approveVisitor(id);
     res.status(200).send(visitor);
   } catch (error) {
-    res.status(500).send({ error: "Failed to approve visitor", message: error.message });
+    res.status(500).send({ error: error.message });
   }
 });
-// Route to decline a visitor
-router.put("/decline/:visitorId", async (req, res) => {
+
+// Decline Visitor Route
+router.put("/declineVisitor/:id", async (req, res) => {
   const { id } = req.params;
-  const { declineReason } = req.body;
+  const { declineReason } = req.body; // Optional decline reason
+
   try {
-    const visitor = await Visitor.findByIdAndUpdate(
-      id,
-      { approved: false, declined: true, declineReason },
-      { new: true, runValidators: true }
-    );
-
-    if (!visitor) {
-      return res.status(404).send({ message: "Visitor not found" });
-    }
-
+    const visitor = await declineVisitor(id, declineReason);
     res.status(200).send(visitor);
   } catch (error) {
-    res.status(500).send({ error: "Failed to decline visitor", message: error.message });
+    res.status(500).send({ error: error.message });
   }
 });
 // Define the route for fetching approved visitors
