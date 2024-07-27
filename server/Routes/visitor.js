@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
-const { fetchVisitorLogs, fetchApprovedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests} = require("../services/visitorService");
+const { fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests} = require("../services/visitorService");
 
 // Add a visitor
 router.post("/visitors", async (req, res) => {
@@ -39,6 +39,17 @@ router.get("/newRequests", async (req, res) => {
   try {
     const newRequests = await fetchNewRequests(date);
     res.status(200).send(newRequests);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+// Fetch visitors yet to arrive
+router.get("/yetToArrive", async (req, res) => {
+  const { date } = req.query;
+  
+  try {
+    const yetToArrive = await visitorsYetToArrive(date);
+    res.status(200).send(yetToArrive);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
@@ -125,6 +136,15 @@ router.put("/declineVisitor/:id", async (req, res) => {
 router.get("/approvedVisitors", async (req, res) => {
   try {
     const approvedVisitors = await fetchApprovedVisitors();
+    res.status(200).send(approvedVisitors);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+//fetch declined visitors
+router.get("/declinedVisitors", async (req, res) => {
+  try {
+    const approvedVisitors = await fetchDeclinedVisitors();
     res.status(200).send(approvedVisitors);
   } catch (error) {
     res.status(500).send({ error: error.message });

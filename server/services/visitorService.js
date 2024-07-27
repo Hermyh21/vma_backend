@@ -34,7 +34,23 @@ const fetchNewRequests = async (date) => {
     throw error;
   }
 };
+const visitorsYetToArrive = async (date) => {
 
+  try {
+    const yetToArrive = await Visitor.find({
+      startDate: { $lte: new Date(date) },
+      endDate: { $gte: new Date(date) },
+      approved: true,
+      declined: false,
+      hasLeft: false,
+      isInside: false,
+    });   
+    return yetToArrive;
+  } catch (error) {
+    console.error("Error fetching new requests:", error);
+    throw error;
+  }
+};
 // Function to fetch approved visitors
 const fetchApprovedVisitors = async () => {
   try {
@@ -44,7 +60,15 @@ const fetchApprovedVisitors = async () => {
     throw new Error('Failed to fetch approved visitors: ' + error.message);
   }
 };
-
+// Function to fetch declined visitors
+const fetchDeclinedVisitors = async () => {
+  try {
+    const declinedVisitors = await Visitor.find({ declined: true });
+    return declinedVisitors;
+  } catch (error) {
+    throw new Error('Failed to fetch declined visitors: ' + error.message);
+  }
+};
 // Polling function to periodically fetch and emit visitor logs
 const pollVisitorLogs = (io, interval = 10000) => {
   setInterval(async () => {
@@ -125,4 +149,4 @@ const declineVisitor = async (visitorId, declineReason = '') => {
     throw new Error('Failed to decline visitor: ' + error.message);
   }
 };
-module.exports = { fetchVisitorLogs, fetchNewRequests, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+module.exports = { fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
