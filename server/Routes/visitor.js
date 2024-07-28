@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
-const { fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests} = require("../services/visitorService");
+const { fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside} = require("../services/visitorService");
 
 // Add a visitor
 router.post("/visitors", async (req, res) => {
@@ -18,7 +18,22 @@ router.post("/visitors", async (req, res) => {
     console.log("error: ", error);
   }
 });
+// Update visitor route
+router.put("/visitors/:id", async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
 
+  try {
+    const visitor = await Visitor.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    if (!visitor) {
+      return res.status(404).send("Visitor not found");
+    }
+    res.status(200).send(visitor);
+  } catch (error) {
+    res.status(400).send(error);
+    console.log("error: ", error);
+  }
+});
 // Get all visitors
 router.get("/getVisitors", async (req, res) => {
   const { date } = req.query;
@@ -87,14 +102,18 @@ router.get("/visitors/:id", async (req, res) => {
     res.status(500).send(error);
   }
 });
-router.delete("/visitors/:visitorId", async (req, res) => {
-  try {
-    const visitorId = req.params.id;
-    const visitor = await deleteVisitorById(visitorId);
+router.delete('/deleteVisitor/:id', async (req, res) => {
+  const { id } = req.params;
 
-    res.status(200).send(visitor);
+  try {
+    const visitor = await Visitor.findByIdAndDelete(id);
+    if (!visitor) {
+      return res.status(404).send('Visitor not found');
+    }
+    res.status(200).send({ message: 'Visitor deleted successfully' });
   } catch (error) {
-    res.status(500).send({ error: error.message });
+    res.status(500).send({ message: 'Failed to delete visitor', error: error.message });
+    console.error('Error:', error);
   }
 });
 
@@ -108,7 +127,7 @@ router.get("/logs", async (req, res) => {
     res.status(500).json({ message: "Error fetching visitor logs", error });
   }
 });
-
+//route to approve visitor
 router.put("/approveVisitor/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
@@ -119,7 +138,17 @@ router.put("/approveVisitor/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
+//route to visitor as inside
+router.put("/visitorInside/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const visitor = await visitorInside(id);
+    res.status(200).send(visitor);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
 // Decline Visitor Route
 router.put("/declineVisitor/:id", async (req, res) => {
   const { id } = req.params;
@@ -127,6 +156,18 @@ router.put("/declineVisitor/:id", async (req, res) => {
 
   try {
     const visitor = await declineVisitor(id, declineReason);
+    res.status(200).send(visitor);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+
+//route to mark visitor's leave
+router.put("/visitorHasLeft/:id", async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const visitor = await visitorHasLeft(id);
     res.status(200).send(visitor);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -144,36 +185,12 @@ router.get("/approvedVisitors", async (req, res) => {
 //fetch declined visitors
 router.get("/declinedVisitors", async (req, res) => {
   try {
-    const approvedVisitors = await fetchDeclinedVisitors();
-    res.status(200).send(approvedVisitors);
+    const declinedVisitors = await fetchDeclinedVisitors();
+    res.status(200).send(declinedVisitors);
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
 });
-// Endpoint to mark a visitor as inside
-router.put('/visitor/:id/enter', async (req, res) => {
-  try {
-    const visitor = await Visitor.findById(req.params.id);
-    if (!visitor) return res.status(404).send('Visitor not found');
 
-    visitor.isInside = true;
-    await visitor.save();
-    res.status(200).json(visitor);
-  } catch (err) {
-    res.status(500).send('Server error');
-  }
-});
-// Endpoint to mark a visitor as left
-router.put('/visitor/:id/leave', async (req, res) => {
-  try {
-    const visitor = await Visitor.findById(req.params.id);
-    if (!visitor) return res.status(404).send('Visitor not found');
 
-    visitor.hasLeft = true;
-    await visitor.save();
-    res.status(200).json(visitor);
-  } catch (err) {
-    res.status(500).send('Server error');
-  }
-});
 module.exports = router;

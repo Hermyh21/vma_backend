@@ -34,23 +34,23 @@ const fetchNewRequests = async (date) => {
     throw error;
   }
 };
-const visitorsYetToArrive = async (date) => {
+// const visitorsYetToArrive = async (date) => {
 
-  try {
-    const yetToArrive = await Visitor.find({
-      startDate: { $lte: new Date(date) },
-      endDate: { $gte: new Date(date) },
-      approved: true,
-      declined: false,
-      hasLeft: false,
-      isInside: false,
-    });   
-    return yetToArrive;
-  } catch (error) {
-    console.error("Error fetching new requests:", error);
-    throw error;
-  }
-};
+//   try {
+//     const yetToArrive = await Visitor.find({
+//       startDate: { $lte: new Date(date) },
+//       endDate: { $gte: new Date(date) },
+//       approved: true,
+//       declined: false,
+//       hasLeft: false,
+//       isInside: false,
+//     });   
+//     return yetToArrive;
+//   } catch (error) {
+//     console.error("Error fetching new requests:", error);
+//     throw error;
+//   }
+// };
 // Function to fetch approved visitors
 const fetchApprovedVisitors = async () => {
   try {
@@ -58,6 +58,15 @@ const fetchApprovedVisitors = async () => {
     return approvedVisitors;
   } catch (error) {
     throw new Error('Failed to fetch approved visitors: ' + error.message);
+  }
+};
+//fetch visitors yet to arrive
+const visitorsYetToArrive = async () => {
+  try {
+    const yetToArrive = await Visitor.find({ approved: true, isInside: false,  hasLeft: false });
+    return yetToArrive;
+  } catch (error) {
+    throw new Error('Failed to fetch visitors yet to arrive: ' + error.message);
   }
 };
 // Function to fetch declined visitors
@@ -129,6 +138,26 @@ const approveVisitor = async (visitorId) => {
     throw new Error('Failed to approve visitor: ' + error.message);
   }
 };
+// mark visitor as inside
+const visitorInside = async (visitorId) => {
+  try {
+    const visitor = await Visitor.findById(visitorId);
+
+    if (!visitor) {
+      throw new Error('Visitor not found');
+    }
+
+    visitor.isInside = true;
+    visitor.hasLeft = false;
+
+    await visitor.save();
+
+    return visitor;
+  } catch (error) {
+    throw new Error('Failed to approve visitor: ' + error.message);
+  }
+};
+
 // Decline visitor by ID
 const declineVisitor = async (visitorId, declineReason = '') => {
   try {
@@ -146,7 +175,23 @@ const declineVisitor = async (visitorId, declineReason = '') => {
 
     return visitor;
   } catch (error) {
+    throw new Error('Failed to let visitor inside: ' + error.message);
+  }
+};
+//mark visitor as hasLeft
+const visitorHasLeft = async (visitorId) => {
+  try {
+    const visitor = await Visitor.findById(visitorId);
+
+    if (!visitor) {
+      throw new Error('Visitor not found');
+    }
+    visitor.hasLeft = true;
+    visitor.isInside = false;    
+    await visitor.save();
+    return visitor;
+  } catch (error) {
     throw new Error('Failed to decline visitor: ' + error.message);
   }
 };
-module.exports = { fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+module.exports = { visitorHasLeft, visitorInside, fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
