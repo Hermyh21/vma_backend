@@ -34,24 +34,46 @@ const fetchNewRequests = async (date) => {
     throw error;
   }
 };
-// const visitorsYetToArrive = async (date) => {
+const visitorsYetToArrive = async (date) => {
 
-//   try {
-//     const yetToArrive = await Visitor.find({
-//       startDate: { $lte: new Date(date) },
-//       endDate: { $gte: new Date(date) },
-//       approved: true,
-//       declined: false,
-//       hasLeft: false,
-//       isInside: false,
-//     });   
-//     return yetToArrive;
-//   } catch (error) {
-//     console.error("Error fetching new requests:", error);
-//     throw error;
-//   }
-// };
-// Function to fetch approved visitors
+  try {
+    console.log("Fetching visitors yet to arrive for date:", date);
+    const yetToArrive = await Visitor.find({
+      startDate: { $lte: new Date(date) },
+      endDate: { $gte: new Date(date) },
+      approved: true,
+      declined: false,
+      hasLeft: false,
+      isInside: false,
+    }); 
+    console.log("Visitors fetched successfully:", yetToArrive);  
+    return yetToArrive;
+  } catch (error) {
+    console.error("Error fetching visitors yet to arrive:", error);
+    throw error;
+  }
+};
+//fetch visitors inside
+const fetchVisitorsInside = async (date) => {
+
+  try {
+    console.log("Fetching visitors inside the compound for date:", date);
+    const fetchVisitorsInside = await Visitor.find({
+      startDate: { $lte: new Date(date) },
+      endDate: { $gte: new Date(date) },
+      approved: true,
+      declined: false,
+      hasLeft: false,
+      isInside: true,
+    }); 
+    console.log("Visitors fetched successfully:", fetchVisitorsInside);  
+    return fetchVisitorsInside;
+  } catch (error) {
+    console.error("Error fetching visitors inside:", error);
+    throw error;
+  }
+};
+//Function to fetch approved visitors
 const fetchApprovedVisitors = async () => {
   try {
     const approvedVisitors = await Visitor.find({ approved: true });
@@ -60,16 +82,7 @@ const fetchApprovedVisitors = async () => {
     throw new Error('Failed to fetch approved visitors: ' + error.message);
   }
 };
-//fetch visitors yet to arrive
-const visitorsYetToArrive = async () => {
-  try {
-    const yetToArrive = await Visitor.find({ approved: true, isInside: false,  hasLeft: false });
-    return yetToArrive;
-  } catch (error) {
-    throw new Error('Failed to fetch visitors yet to arrive: ' + error.message);
-  }
-};
-// Function to fetch declined visitors
+
 const fetchDeclinedVisitors = async () => {
   try {
     const declinedVisitors = await Visitor.find({ declined: true });
@@ -191,7 +204,7 @@ const visitorHasLeft = async (visitorId) => {
     await visitor.save();
     return visitor;
   } catch (error) {
-    throw new Error('Failed to decline visitor: ' + error.message);
+    throw new Error('Failed to mark visitor as hasLeft: ' + error.message);
   }
 };
-module.exports = { visitorHasLeft, visitorInside, fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+module.exports = { fetchVisitorsInside, visitorHasLeft, visitorInside, fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };

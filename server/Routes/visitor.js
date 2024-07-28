@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
-const { fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside} = require("../services/visitorService");
+const { fetchVisitorsInside, visitorInside, visitorsYetToArrive, fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside} = require("../services/visitorService");
 
 // Add a visitor
 router.post("/visitors", async (req, res) => {
@@ -63,11 +63,30 @@ router.get("/yetToArrive", async (req, res) => {
   const { date } = req.query;
   
   try {
+    console.log("Reeeequests from the route", date);
     const yetToArrive = await visitorsYetToArrive(date);
+    console.log("Responding with visitors yet to arrive:", yetToArrive);
     res.status(200).send(yetToArrive);
   } catch (error) {
+    console.error("Error in /yetToArrive route:", error);
     res.status(500).send({ error: error.message });
   }
+  
+});
+//Fetch visitors inside the compound
+router.get("/fetchInside", async (req, res) => {
+  const { date } = req.query;
+  
+  try {
+    console.log("]]]]]from the route", date);
+    const fetchInside = await fetchVisitorsInside(date);
+    console.log("Responding with visitors inside:", fetchInside);
+    res.status(200).send(fetchInside);
+  } catch (error) {
+    console.error("Error in /fetchVisitorsInside route:", error);
+    res.status(500).send({ error: error.message });
+  }
+  
 });
 router.get("/getVisitor/:visitorId", async (req, res) => {
   console.log("visitors get request recieved: ", req.query);
@@ -139,7 +158,7 @@ router.put("/approveVisitor/:id", async (req, res) => {
   }
 });
 //route to visitor as inside
-router.put("/visitorInside/:id", async (req, res) => {
+router.put("/visitorsInside/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
