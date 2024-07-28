@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
-const { fetchVisitorsInside, visitorInside, visitorsYetToArrive, fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside} = require("../services/visitorService");
-
+const { fetchVisitorsLeft, fetchVisitorsInside, visitorInside, visitorsYetToArrive, fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside, visitorHasLeft} = require("../services/visitorService");
+const PlateCode = require('../Models/plateCode'); 
+const PlateRegion = require('../Models/plateRegion');
 // Add a visitor
 router.post("/visitors", async (req, res) => {
   let data = req.body;
@@ -88,6 +89,20 @@ router.get("/fetchInside", async (req, res) => {
   }
   
 });
+//fetch visitors who left
+router.get("/fetchLeft", async (req, res) => {
+  const { date } = req.query;  
+  try {
+    console.log("frommmm the route", date);
+    const fetchLeft = await fetchVisitorsLeft(date);
+    console.log("Responding with visitors who left:", fetchLeft);
+    res.status(200).send(fetchLeft);
+  } catch (error) {
+    console.error("Error in /fetchVisitorsLeft route:", error);
+    res.status(500).send({ error: error.message });
+  }
+  
+});
 router.get("/getVisitor/:visitorId", async (req, res) => {
   console.log("visitors get request recieved: ", req.query);
   try {
@@ -157,12 +172,23 @@ router.put("/approveVisitor/:id", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-//route to visitor as inside
+//route to mark visitor as inside
 router.put("/visitorsInside/:id", async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
     const visitor = await visitorInside(id);
+    res.status(200).send(visitor);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+});
+// route to let visitor leave
+router.put("/visitorLeft/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const visitor = await visitorHasLeft(id);
     res.status(200).send(visitor);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -181,17 +207,6 @@ router.put("/declineVisitor/:id", async (req, res) => {
   }
 });
 
-//route to mark visitor's leave
-router.put("/visitorHasLeft/:id", async (req, res) => {
-  const { id } = req.params;
-  
-  try {
-    const visitor = await visitorHasLeft(id);
-    res.status(200).send(visitor);
-  } catch (error) {
-    res.status(500).send({ error: error.message });
-  }
-});
 // Fetch approved visitors
 router.get("/approvedVisitors", async (req, res) => {
   try {
@@ -210,6 +225,5 @@ router.get("/declinedVisitors", async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 });
-
 
 module.exports = router;

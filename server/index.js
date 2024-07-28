@@ -54,9 +54,10 @@ app.post("/", (req, res) => {
 
 app.use("/api", visitorRoutes);
 app.use(authRouter);
-app.use("/api", plateRouter); 
+app.use(plateRouter); 
 app.use(userRouter);
 app.use('/api/possessions', possessionsRoutes);
+
 // Real-time updates with Socket.io
 io.on("connection", (socket) => {
   console.log("A client connected");

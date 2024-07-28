@@ -73,6 +73,26 @@ const fetchVisitorsInside = async (date) => {
     throw error;
   }
 };
+//fetch visitors who left
+const fetchVisitorsLeft = async (date) => {
+
+  try {
+    console.log("Fetching visitors inside the compound for date:", date);
+    const fetchVisitorsLeft = await Visitor.find({
+      startDate: { $lte: new Date(date) },
+      endDate: { $gte: new Date(date) },
+      approved: true,
+      declined: false,
+      hasLeft: true,
+      isInside: true,
+    }); 
+    console.log("Visitors fetched successfully:", fetchVisitorsLeft);  
+    return fetchVisitorsLeft;
+  } catch (error) {
+    console.error("Error fetching visitors who left:", error);
+    throw error;
+  }
+};
 //Function to fetch approved visitors
 const fetchApprovedVisitors = async () => {
   try {
@@ -207,4 +227,4 @@ const visitorHasLeft = async (visitorId) => {
     throw new Error('Failed to mark visitor as hasLeft: ' + error.message);
   }
 };
-module.exports = { fetchVisitorsInside, visitorHasLeft, visitorInside, fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };
+module.exports = { fetchVisitorsLeft, fetchVisitorsInside, visitorHasLeft, visitorInside, fetchVisitorLogs, fetchDeclinedVisitors, fetchNewRequests, visitorsYetToArrive, declineVisitor, approveVisitor, pollVisitorLogs, getVisitorById, fetchApprovedVisitors, deleteVisitorById };

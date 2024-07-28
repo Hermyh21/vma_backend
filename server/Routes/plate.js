@@ -1,74 +1,77 @@
 const express = require("express");
 const router = express.Router();
-const PlateRegion = require("../Models/PlateRegion");
+const PlateRegion = require("../Models/plateRegion");
 const PlateCode = require("../Models/plateCode");
 
-// Get all plate regions
-router.get("/plate-regions", async (req, res) => {
+// Add Plate Code
+router.post('/api/Plate/PlateCode', async (req, res) => {
+  const { code, description } = req.body;
   try {
-    const plateRegions = await PlateRegion.find();
-    res.status(200).json(plateRegions);
+    const newPlateCode = new PlateCode({ code, description });
+    await newPlateCode.save();
+    res.status(201).json(newPlateCode);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Failed to add plate code', error });
   }
 });
 
-// Add a new plate region
-router.post("/plate-regions", async (req, res) => {
+// Delete Plate Code
+router.delete('/api/Plate/plate-code/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const { region } = req.body;
-    const newRegion = new PlateRegion({ region });
-    await newRegion.save();
-    res.status(201).json(newRegion);
+    const plateCode = await PlateCode.findByIdAndDelete(id);
+    if (!plateCode) {
+      return res.status(404).json({ message: 'Plate code not found' });
+    }
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Failed to delete plate code', error });
   }
 });
 
-// Delete a plate region
-router.delete("/plate-regions/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    await PlateRegion.findByIdAndDelete(id);
-    res.status(200).json({ message: "Plate region deleted" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get all plate codes
-router.get("/plate-codes", async (req, res) => {
+// Fetch Plate Codes
+router.get('/api/Plate/PlateCode', async (req, res) => {
   try {
     const plateCodes = await PlateCode.find();
     res.status(200).json(plateCodes);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Failed to fetch plate codes', error });
   }
 });
 
-// Add a new plate code
-router.post("/plate-codes", async (req, res) => {
+// Add Plate Region
+router.post('/api/Plate/PlateRegion', async (req, res) => {
+  const { region } = req.body;
   try {
-    const { code, description } = req.body;
-    const newCode = new PlateCode({ code, description });
-    await newCode.save();
-    res.status(201).json(newCode);
-    console.log("Plate code added");
+    const newRegion = new PlateRegion({ name: region });
+    await newRegion.save();
+    res.status(201).json(newRegion);
   } catch (error) {
-    res.status(500).json({ error: error.message });
-    console.log("failed to add code")
+    res.status(500).json({ message: 'Failed to add region', error });
   }
 });
 
-// Delete a plate code
-router.delete("/plate-codes/:id", async (req, res) => {
+// Delete Region
+router.delete('/api/Plate/plate-regions/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    await PlateCode.findByIdAndDelete(id);
-    res.status(200).json({ message: "Plate code deleted" });
+    const region = await PlateRegion.findByIdAndDelete(id);
+    if (!region) {
+      return res.status(404).json({ message: 'Region not found' });
+    }
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Failed to delete region', error });
   }
 });
 
+// Fetch Regions
+router.get('/api/Plate/PlateRegion', async (req, res) => {
+  try {
+    const regions = await PlateRegion.find();
+    res.status(200).json(regions);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch regions', error });
+  }
+});
 module.exports = router;
