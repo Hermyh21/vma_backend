@@ -42,6 +42,10 @@ router.get('/api/Plate/PlateCode', async (req, res) => {
 // Add Plate Region
 router.post('/api/Plate/PlateRegion', async (req, res) => {
   const { region } = req.body;
+  console.log('Received region:', region); // Debug log
+  if (!region) {
+    return res.status(400).json({ message: 'Region is required' });
+  }
   try {
     const newRegion = new PlateRegion({ name: region });
     await newRegion.save();
@@ -50,6 +54,7 @@ router.post('/api/Plate/PlateRegion', async (req, res) => {
     res.status(500).json({ message: 'Failed to add region', error });
   }
 });
+
 
 // Delete Region
 router.delete('/api/Plate/plate-regions/:id', async (req, res) => {
