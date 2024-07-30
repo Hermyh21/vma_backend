@@ -84,9 +84,9 @@ const fetchVisitorsLeft = async (date) => {
       approved: true,
       declined: false,
       hasLeft: true,
-      isInside: true,
+      isInside: false,
     }); 
-    console.log("Visitors fetched successfully:", fetchVisitorsLeft);  
+    console.log("Visitors who left fetched successfully:", fetchVisitorsLeft);  
     return fetchVisitorsLeft;
   } catch (error) {
     console.error("Error fetching visitors who left:", error);

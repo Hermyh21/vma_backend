@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Visitor = require("../Models/visitor");
 const { fetchVisitorsLeft, fetchVisitorsInside, visitorInside, visitorsYetToArrive, fetchVisitorLogs, fetchApprovedVisitors, fetchDeclinedVisitors, declineVisitor, approveVisitor, deleteVisitorById, fetchNewRequests, isInside, visitorHasLeft} = require("../services/visitorService");
-const PlateCode = require('../Models/plateCode'); 
-const PlateRegion = require('../Models/plateRegion');
 // Add a visitor
 router.post("/visitors", async (req, res) => {
   let data = req.body;
@@ -93,7 +91,7 @@ router.get("/fetchInside", async (req, res) => {
 router.get("/fetchLeft", async (req, res) => {
   const { date } = req.query;  
   try {
-    console.log("frommmm the route", date);
+    console.log("lefttttt", date);
     const fetchLeft = await fetchVisitorsLeft(date);
     console.log("Responding with visitors who left:", fetchLeft);
     res.status(200).send(fetchLeft);
