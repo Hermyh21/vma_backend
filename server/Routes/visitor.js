@@ -18,10 +18,10 @@ router.post("/visitors", async (req, res) => {
   }
 });
 // Update visitor route
-router.put("/visitors/:id", async (req, res) => {
+router.put("/updatevisitors/:id", async (req, res) => {
   const { id } = req.params;
   const data = req.body;
-
+console.log("Herrrrr:",data);
   try {
     const visitor = await Visitor.findByIdAndUpdate(id, data, { new: true, runValidators: true });
     if (!visitor) {
