@@ -1,10 +1,12 @@
+const Possession = require("../models/possession");
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+// const Schema = mongoose.Schema;
 
-const possesionSchema = new Schema({
-  item: { type: String, required: true },
+// const possesionSchema = new Schema({
+//   id: {type: String, required: true},
+//   item: { type: String, required: true },
   
-});
+// });
 
 const visitorSchema = new mongoose.Schema(
   {
@@ -39,7 +41,7 @@ const visitorSchema = new mongoose.Schema(
       required: false,
     },
     
-    possessions: [possesionSchema],
+    possessions: [Possession.schema],
     approved: {
       type: Boolean,
       default: false,

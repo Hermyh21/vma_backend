@@ -1,16 +1,12 @@
 const mongoose = require('mongoose');
 
 const possessionSchema = new mongoose.Schema({
-  name: {
+  item: {
     type: String,
     required: true,
   },
-  checked: {
-    type: Boolean,
-    default: false,
-  },
 });
 
-const Possession = mongoose.model('Possession', possessionSchema);
-
-module.exports = Possession;
+// Check if the model already exists before defining it
+module.exports = mongoose.models.Possession || mongoose.model("Possession", possessionSchema);
+// module.exports = Possession;
