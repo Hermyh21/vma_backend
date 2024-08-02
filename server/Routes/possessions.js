@@ -3,7 +3,7 @@ const router = express.Router();
 const Possession = require('../models/possession');
 
 // Fetch all possessions
-router.get('/', async (req, res) => {
+router.get('/possessions', async (req, res) => {
   try {
     const possessions = await Possession.find();
     res.status(200).json(possessions);
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 });
 
 // Add a new possession
-router.post('/', async (req, res) => {
+router.post('/possessions', async (req, res) => {
   const { item } = req.body;
 
   if (!item) {
@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
 });
 
 // Delete a possession
-router.delete('/:id', async (req, res) => {
+router.delete('/possessions/:id', async (req, res) => {
   const { id } = req.params;
 
   try {

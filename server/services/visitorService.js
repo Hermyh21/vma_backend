@@ -3,20 +3,33 @@ const socketIO = require("socket.io");
 
 // Function to fetch visitor logs within a specific date range from the database
 const fetchVisitorLogs = async (date) => {
-  console.log("fetchVisitorLogs: ", date);
-  try {
-    const visitorLogs = await Visitor.find({
-      startDate: { $lte: new Date(date) },
-      endDate: { $gte: new Date(date) },
-    });
+  console.log("fetchVisitorLogs called with date:", date);
+  
+  // Create the query object and log it
+  const query = {
+    startDate: { $lte: new Date(date) },
+    endDate: { $gte: new Date(date) },
+  };
+  console.log("Query to fetch visitor logs:", JSON.stringify(query, null, 2));
 
-    //console.log("fetchedVisitorLogs: ", visitorLogs);
+  try {
+    const visitorLogs = await Visitor.find(query);
+
+    // Log the number of visitor logs fetched and a sample if the array is large
+    console.log(`Number of visitor logs fetched: ${visitorLogs.length}`);
+    if (visitorLogs.length > 0) {
+      console.log("Sample visitor log fetched:", visitorLogs[0]);
+    } else {
+      console.log("No visitor logs found for the given date.");
+    }
+
     return visitorLogs;
   } catch (error) {
     console.error("Error fetching visitor logs:", error);
     throw error;
   }
 };
+
 const fetchNewRequests = async (date) => {
   console.log("fetchNewRequests: ", date);
   try {

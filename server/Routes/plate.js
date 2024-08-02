@@ -6,8 +6,6 @@ const PlateCode = require("../Models/plateCode");
 // Add Plate Code
 router.post('/api/Plate/PlateCode', async (req, res) => {
   const { code, description } = req.body;
-  
-  // Debugging statements
   console.log('Received PlateCode:');
   console.log('Code:', code);
   console.log('Description:', description);

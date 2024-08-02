@@ -36,20 +36,32 @@ console.log("Herrrrr:",data);
 // Get all visitors
 router.get("/getVisitors", async (req, res) => {
   const { date } = req.query;
-  
-  const visitor = await fetchVisitorLogs(date);
-  console.log("fetched visitor recieved: ", visitor);
-  if (visitor) {
-    res.status(200).send(visitor);
-  } else {
-    res.status(500).send(error);
+
+  // Log the incoming request query
+  console.log("Received request to /getVisitors with query:", req.query);
+
+  try {
+    const visitor = await fetchVisitorLogs(date);
+    
+    // Log the fetched visitor data
+    console.log("Fetched visitor received:", visitor);
+    
+    if (visitor) {
+      res.status(200).send(visitor);
+    } else {
+      res.status(404).send({ error: "No visitors found for the given date" });
+    }
+  } catch (error) {
+    // Log any errors that occur
+    console.error("Error fetching visitors:", error);
+    res.status(500).send({ error: "An error occurred while fetching visitors" });
   }
 });
 
 // Fetch new requests
 router.get("/newRequests", async (req, res) => {
   const { date } = req.query;
-  
+  console.log("Fetch New Requests on date:", date);
   try {
     const newRequests = await fetchNewRequests(date);
     res.status(200).send(newRequests);

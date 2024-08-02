@@ -56,7 +56,7 @@ app.use("/api", visitorRoutes);
 app.use(authRouter);
 app.use(plateRouter); 
 app.use(userRouter);
-app.use('/possessions', possessionsRoutes);
+app.use(possessionsRoutes);
 
 // Real-time updates with Socket.io
 io.on("connection", (socket) => {

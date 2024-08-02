@@ -102,11 +102,14 @@ authRouter.post("/forgot-password", async (req, res) => {
 
     const token = crypto.randomBytes(20).toString("hex");
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+    user.resetPasswordExpires = Date.now() + 600000;
+ // 10 minutes from now
 
     await user.save();
 
     const transporter = nodemailer.createTransport({
+      // host: process.env.EMAIL_HOST,
+      // port: process.env.EMAIL_PORT,
       service: "Gmail",
       auth: {
         user: process.env.EMAIL,
@@ -118,9 +121,9 @@ authRouter.post("/forgot-password", async (req, res) => {
       to: user.email,
       from: process.env.EMAIL,
       subject: "Password Reset",
-      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+      text: `You are receiving this because you have requested the reset of the password for your account.\n\n
         Please click on the following link, or paste this into your browser to complete the process:\n\n
-        http://localhost:3000/reset-password/${token}\n\n
+        http://localhost:4000/reset-password/${token}\n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n`,
     };
 
