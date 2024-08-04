@@ -8,7 +8,15 @@ const getAllUsers = async () => {
     throw new Error(error.message);
   }
 };
+const deleteUser = async (userId) => {
+  try {
+    await User.findByIdAndDelete(userId);
+  } catch (error) {
+    throw new Error('Failed to delete user: ' + error.message);
+  }
+};
 
 module.exports = {
   getAllUsers,
+  deleteUser
 };

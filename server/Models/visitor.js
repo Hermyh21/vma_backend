@@ -61,6 +61,10 @@ const visitorSchema = new mongoose.Schema(
     hasLeft: {
       type: Boolean,
       default: false,
+    },
+    requestedBy: {
+      type: String,
+      default: true,
     }
   },
   {

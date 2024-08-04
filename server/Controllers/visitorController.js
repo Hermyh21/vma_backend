@@ -15,7 +15,8 @@ exports.updateVisitor = async (req, res) => {
     declined,
     declineReason,
     isInside,
-    hasLeft
+    hasLeft, 
+    requestedBy,
   } = req.body;
 
   try {
@@ -34,7 +35,8 @@ exports.updateVisitor = async (req, res) => {
         declined,
         declineReason,
         isInside,
-        hasLeft
+        hasLeft,
+        requestedBy,
       },
       { new: true, runValidators: true }
     );

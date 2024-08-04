@@ -4,11 +4,20 @@ const socketIO = require("socket.io");
 // Function to fetch visitor logs within a specific date range from the database
 const fetchVisitorLogs = async (date) => {
   console.log("fetchVisitorLogs called with date:", date);
-  
-  // Create the query object and log it
+ // Convert the date to a Date object and set the time to midnight
+ const startOfDay = new Date(date);
+ startOfDay.setHours(6, 0, 0, 0);
+
+ const endOfDay = new Date(date);
+ endOfDay.setHours(17, 0, 0, 0);
+
+ console.log("Query to fetch visitor logs: ", {
+   startDate: { $lte: endOfDay },
+   endDate: { $gte: startOfDay },
+ });
   const query = {
-    startDate: { $lte: new Date(date) },
-    endDate: { $gte: new Date(date) },
+    startDate: { $lte: endOfDay },
+      endDate: { $gte: startOfDay },
   };
   console.log("Query to fetch visitor logs:", JSON.stringify(query, null, 2));
 
