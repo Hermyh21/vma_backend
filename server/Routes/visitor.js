@@ -11,7 +11,7 @@ router.post("/visitors", async (req, res) => {
     const visitor = new Visitor(data);
     //console.log("visitors recieved: ", visitor);
     await visitor.save();
-    res.status(201).send("User created successfully");
+    res.status(201).send("Visitor created successfully");
   } catch (error) {
     res.status(400).send(error);
     console.log("error: ", error);
