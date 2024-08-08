@@ -5,6 +5,7 @@ const authRouter = require("./Routes/auth");
 const userRouter = require('./Routes/userRoutes');
 const visitorRoutes = require("./Routes/visitor");
 const plateRouter = require("./Routes/plate");
+const departmentRoutes = require('./Routes/departments');
 const cors = require("cors");
 const http = require("http");
 const socketIO = require("socket.io");
@@ -57,7 +58,7 @@ app.use(authRouter);
 app.use(plateRouter); 
 app.use(userRouter);
 app.use(possessionsRoutes);
-
+app.use('/api/departments', departmentRoutes);
 // Real-time updates with Socket.io
 io.on("connection", (socket) => {
   console.log("A client connected");

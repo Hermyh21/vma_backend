@@ -89,6 +89,16 @@ authRouter.get("/", auth, async (req, res) => {
   }
 });
 
+// Logout User
+authRouter.post("/logout", auth, async (req, res) => {
+  try {
+    // Invalidate token by client-side actions, no server-side state to invalidate in JWT
+    res.status(200).json({ msg: "Logout successful" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Forgot Password
 authRouter.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
